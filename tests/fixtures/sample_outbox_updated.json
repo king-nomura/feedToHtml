@@ -1,0 +1,39 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "OrderedCollectionPage",
+  "orderedItems": [
+    {
+      "directMessage": false,
+      "id": "https://social.example.com/activities/new-item-12345",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "これは新しい投稿です！インクリメンタル更新のテスト。",
+        "sensitive": false
+      },
+      "published": "2025-10-05T10:00:00.000000Z"
+    },
+    {
+      "directMessage": false,
+      "id": "https://social.example.com/activities/2bcd361f-1d37-41c1-8fc4-5b6ce405ec12",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "AIコーディングでもやっぱりまだ「どうやってプロンプトを書くのか」の次元で振り回されている印象。言い回しとか機嫌の取り方のノウハウを貯めてもいつまで有効なのか分からない。それは私が夢見た未来じゃない。",
+        "sensitive": false
+      },
+      "published": "2025-10-03T00:46:10.899592Z"
+    },
+    {
+      "directMessage": false,
+      "id": "https://social.example.com/activities/3def472g-2e48-52d2-9gd5-6c7df516fd23",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "今日は天気が良いですね。散歩日和です。",
+        "sensitive": false
+      },
+      "published": "2025-10-02T12:30:00.000000Z"
+    }
+  ]
+}

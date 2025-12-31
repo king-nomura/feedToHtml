@@ -1,0 +1,48 @@
+{
+  "name": "feedtohtml",
+  "version": "1.0.0",
+  "description": "RSS to HTML converter command-line tool",
+  "type": "module",
+  "main": "src/feedtohtml.js",
+  "bin": {
+    "feedtohtml": "./src/cli/main.js",
+    "outboxtohtml": "./src/cli/outbox_main.js"
+  },
+  "exports": {
+    ".": "./src/feedtohtml.js",
+    "./outbox": "./src/outboxtohtml.js",
+    "./cli": "./src/cli/main.js",
+    "./outbox-cli": "./src/cli/outbox_main.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "node --test tests/**/*.js",
+    "lint": "echo 'Linting with built-in Node.js style (placeholder)'",
+    "build": "echo 'No build step required for Node.js project'"
+  },
+  "keywords": [
+    "rss",
+    "html",
+    "converter",
+    "cli",
+    "feeds",
+    "atom"
+  ],
+  "author": "feedToHtml",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.3.2"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/king-nomura/feedToHtml.git"
+  },
+  "bugs": {
+    "url": "https://github.com/king-nomura/feedToHtml/issues"
+  },
+  "homepage": "https://github.com/king-nomura/feedToHtml#readme"
+}

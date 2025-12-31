@@ -1,0 +1,61 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "OrderedCollectionPage",
+  "orderedItems": [
+    {
+      "directMessage": false,
+      "id": "https://social.example.com/activities/2bcd361f-1d37-41c1-8fc4-5b6ce405ec12",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "AIコーディングでもやっぱりまだ「どうやってプロンプトを書くのか」の次元で振り回されている印象。言い回しとか機嫌の取り方のノウハウを貯めてもいつまで有効なのか分からない。それは私が夢見た未来じゃない。",
+        "sensitive": false
+      },
+      "published": "2025-10-03T00:46:10.899592Z"
+    },
+    {
+      "directMessage": false,
+      "id": "https://social.example.com/activities/3def472g-2e48-52d2-9gd5-6c7df516fd23",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "今日は天気が良いですね。散歩日和です。",
+        "sensitive": false
+      },
+      "published": "2025-10-02T12:30:00.000000Z"
+    },
+    {
+      "directMessage": true,
+      "id": "https://social.example.com/activities/4efg583h-3f59-63e3-0he6-7d8eg627ge34",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "This is a direct message and should be filtered out",
+        "sensitive": false
+      },
+      "published": "2025-10-01T10:00:00.000000Z"
+    },
+    {
+      "directMessage": false,
+      "id": "https://social.example.com/activities/5fgh694i-4g60-74f4-1if7-8e9fh738hf45",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "This is sensitive content and should be filtered out",
+        "sensitive": true
+      },
+      "published": "2025-10-01T09:00:00.000000Z"
+    },
+    {
+      "directMessage": false,
+      "id": "https://social.example.com/activities/6ghi705j-5h71-85g5-2jg8-9f0gi849ig56",
+      "type": "Create",
+      "object": {
+        "type": "Note",
+        "content": "プログラミングは楽しい！",
+        "sensitive": false
+      },
+      "published": "2025-09-15T08:00:00.000000Z"
+    }
+  ]
+}
