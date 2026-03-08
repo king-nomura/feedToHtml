@@ -2,6 +2,7 @@
   "templatePath": "./templates/template.html",
   "timeout": 60,
   "outputDir": "./output",
+  "latestPage": "latest.html",
   "dateFormat": {
     "locale": "ja-JP",
     "options": {

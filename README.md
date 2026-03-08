@@ -77,6 +77,20 @@ node src/cli/main.js https://example.com/rss.xml --config config.json
 
 既存のHTMLファイルがある場合は、新しい記事のみが追加されます（インクリメンタル更新）。
 
+### 最新ページリダイレクト
+
+設定ファイルで `latestPage` を指定すると、最新の記事が含まれる月別ページへ自動リダイレクトするHTMLファイルが出力ディレクトリに生成されます。
+
+```json
+{
+  "latestPage": "latest.html"
+}
+```
+
+上記の場合、`<output_dir>/latest.html` が生成され、アクセスすると最新月のページ（例: `2025/2025-03.html`）へリダイレクトされます。
+
+> **注意**: セキュリティ上の理由から、`../` 等を使って出力ディレクトリより上の階層を指すパスは拒否されます。
+
 ## 設定ファイル
 
 JSON形式の設定ファイルで以下のオプションを設定できます：
@@ -86,6 +100,7 @@ JSON形式の設定ファイルで以下のオプションを設定できます�
   "templatePath": "./templates/custom.html",
   "timeout": 60,
   "outputDir": "./output",
+  "latestPage": "latest.html",
   "dateFormat": {
     "locale": "ja-JP",
     "options": {
@@ -103,6 +118,7 @@ JSON形式の設定ファイルで以下のオプションを設定できます�
 - `timeout` (オプション): ネットワークタイムアウト秒数（デフォルト: 60秒）
 - `outputDir` (オプション): 出力ディレクトリのパス
 - `dateFormat` (オプション): 日付フォーマット設定（Intl.DateTimeFormat準拠）
+- `latestPage` (オプション): 最新記事ページへのリダイレクトHTMLのファイル名（例: `"latest.html"`）
 
 ## HTMLテンプレート
 

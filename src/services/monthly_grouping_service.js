@@ -58,7 +58,10 @@ export class MonthlyGroupingService {
    */
   generateFilePath(yearMonth, outputDir) {
     const [year] = yearMonth.split('-');
-    const normalizedDir = outputDir.replace(/\/+$/, ''); // Remove trailing slashes
+    let normalizedDir = outputDir;
+    while (normalizedDir.endsWith('/')) {
+      normalizedDir = normalizedDir.slice(0, -1);
+    }
     return `${normalizedDir}/${year}/${yearMonth}.html`;
   }
 
@@ -70,7 +73,10 @@ export class MonthlyGroupingService {
    */
   getYearDirPath(yearMonth, outputDir) {
     const [year] = yearMonth.split('-');
-    const normalizedDir = outputDir.replace(/\/+$/, '');
+    let normalizedDir = outputDir;
+    while (normalizedDir.endsWith('/')) {
+      normalizedDir = normalizedDir.slice(0, -1);
+    }
     return `${normalizedDir}/${year}`;
   }
 

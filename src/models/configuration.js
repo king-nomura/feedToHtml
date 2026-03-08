@@ -1,5 +1,5 @@
 import { existsSync, accessSync, constants, mkdirSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { resolve, dirname, relative } from 'node:path';
 
 /**
  * Configuration model for application settings
@@ -18,6 +18,7 @@ export class Configuration {
     this.timeout = configData.timeout || 60; // Default 60 seconds
     this.outputDir = configData.outputDir || process.cwd(); // Default to current directory
     this.dateFormat = configData.dateFormat || null; // Date format settings (Intl.DateTimeFormat)
+    this.latestPage = configData.latestPage || null; // Filename for latest page redirect HTML
 
     this.validate();
   }
@@ -93,6 +94,24 @@ export class Configuration {
       }
     }
 
+    // Validate latestPage if specified
+    if (this.latestPage !== null) {
+      if (typeof this.latestPage !== 'string') {
+        throw new Error('latestPage must be a string');
+      }
+
+      if (this.latestPage.trim().length === 0) {
+        throw new Error('latestPage cannot be empty');
+      }
+
+      // Prevent path traversal: resolved path must stay within outputDir
+      const resolvedLatestPage = resolve(this.outputDir, this.latestPage);
+      const rel = relative(this.outputDir, resolvedLatestPage);
+      if (rel.startsWith('..')) {
+        throw new Error('latestPage must not reference a path outside the output directory');
+      }
+    }
+
     // Validate dateFormat if specified
     if (this.dateFormat !== null) {
       if (typeof this.dateFormat !== 'object') {
@@ -136,7 +155,8 @@ export class Configuration {
       templatePath: this.templatePath,
       timeout: this.timeout,
       outputDir: this.outputDir,
-      dateFormat: this.dateFormat
+      dateFormat: this.dateFormat,
+      latestPage: this.latestPage
     };
   }
 
