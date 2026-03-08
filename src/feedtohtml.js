@@ -9,7 +9,7 @@ import { OutputFile } from './models/output_file.js';
 import { URLValidator } from './utils/url_validator.js';
 import { FileUtils } from './utils/file_utils.js';
 import { existsSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 
 /**
  * Main FeedToHtml API class - facade for all RSS to HTML conversion functionality
@@ -258,6 +258,9 @@ export class FeedToHtml {
           }
         }
 
+        // Generate latest page redirect HTML if configured
+        this.writeLatestPageRedirect(mergedConfig, monthlyGroups, outputDir, options);
+
         // Create result
         const result = {
           success: true,
@@ -318,6 +321,53 @@ export class FeedToHtml {
           type: this.categorizeError(error)
         }
       };
+    }
+  }
+
+  /**
+   * Write latest page redirect HTML if latestPage is configured
+   * @param {Object} config - Merged configuration
+   * @param {Map<string, Array>} monthlyGroups - Monthly groups (sorted descending)
+   * @param {string} outputDir - Output directory
+   * @param {Object} options - Conversion options
+   */
+  writeLatestPageRedirect(config, monthlyGroups, outputDir, options) {
+    if (!config.latestPage) {
+      return;
+    }
+
+    // Get the latest (first) month from the sorted groups
+    const latestMonth = monthlyGroups.keys().next().value;
+    if (!latestMonth) {
+      return;
+    }
+
+    // Build relative path from latestPage to the latest monthly file
+    const latestPagePath = join(outputDir, config.latestPage);
+    const latestMonthFilePath = this.monthlyGroupingService.generateFilePath(latestMonth, outputDir);
+    const relativePath = relative(dirname(latestPagePath), latestMonthFilePath);
+
+    const redirectHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=${relativePath}">
+<title>Redirecting...</title>
+</head>
+<body>
+<p>Redirecting to <a href="${relativePath}">${relativePath}</a>...</p>
+</body>
+</html>
+`;
+
+    const dirPath = dirname(latestPagePath);
+    if (!existsSync(dirPath)) {
+      mkdirSync(dirPath, { recursive: true });
+    }
+    writeFileSync(latestPagePath, redirectHtml, 'utf-8');
+
+    if (options.verbose) {
+      console.log(`Generated latest page redirect: ${config.latestPage} -> ${relativePath}`);
     }
   }
 

@@ -40,6 +40,7 @@ feedToHtml/
 - インクリメンタル更新（既存ファイルに新規記事のみ追加）
 - カスタムHTMLテンプレート対応
 - 設定ファイルによる柔軟な設定
+- 最新ページリダイレクト（`latestPage` 設定で最新月ページへのリダイレクトHTML生成）
 
 ### outboxtohtml (実験的機能)
 - ActivityPub Outbox（Mastodon等）からHTMLへの変換
@@ -74,6 +75,7 @@ node src/cli/outbox_main.js --file <FILE> --output ./public
   "templatePath": "string (オプション)",
   "timeout": "number (オプション, デフォルト: 60)",
   "outputDir": "string (オプション)",
+  "latestPage": "string (オプション, 例: latest.html - 最新月ページへのリダイレクトHTML出力ファイル名。出力ディレクトリ外のパスは拒否)",
   "dateFormat": {
     "locale": "string (例: ja-JP)",
     "options": "object (Intl.DateTimeFormat オプション)"
