@@ -4,6 +4,7 @@ import { MonthlyGroupingService } from './services/monthly_grouping_service.js';
 import { HtmlParserService } from './services/html_parser_service.js';
 import { FileWriter } from './services/file_writer.js';
 import { ConfigurationLoader } from './services/configuration_loader.js';
+import { SitemapService } from './services/sitemap_service.js';
 import { HTMLTemplate } from './models/html_template.js';
 import { OutputFile } from './models/output_file.js';
 import { URLValidator } from './utils/url_validator.js';
@@ -24,6 +25,7 @@ export class FeedToHtml {
     this.fileWriter = new FileWriter();
     this.configLoader = new ConfigurationLoader();
     this.urlValidator = new URLValidator();
+    this.sitemapService = new SitemapService();
 
     // Load configuration
     this.config = this.configLoader.load(config.configPath, config);
@@ -136,6 +138,7 @@ export class FeedToHtml {
       // Process each monthly group
       const outputFiles = [];
       const newlyCreatedPages = []; // Track newly created pages for updating previous page navigation
+      const newlyCreatedMonths = []; // Track all newly created months for sitemap updates
       let totalNewItems = 0;
       let updatedFiles = 0;
 
@@ -188,6 +191,7 @@ export class FeedToHtml {
           updatedFiles++;
         } else {
           totalNewItems += items.length;
+          newlyCreatedMonths.push(yearMonth);
           if (options.verbose) {
             console.log(`${yearMonth}: Creating new file with ${items.length} items`);
           }
@@ -260,6 +264,12 @@ export class FeedToHtml {
 
         // Generate latest page redirect HTML if configured
         this.writeLatestPageRedirect(mergedConfig, monthlyGroups, outputDir, options);
+
+        // Update sitemap.xml for newly created pages (oldest first, so the latest month ends up with "daily")
+        for (const yearMonth of [...newlyCreatedMonths].reverse()) {
+          const newFilePath = this.monthlyGroupingService.generateFilePath(yearMonth, outputDir);
+          this.sitemapService.updateSitemap(mergedConfig, outputDir, newFilePath, options);
+        }
 
         // Create result
         const result = {

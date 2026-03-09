@@ -19,6 +19,8 @@ export class Configuration {
     this.outputDir = configData.outputDir || process.cwd(); // Default to current directory
     this.dateFormat = configData.dateFormat || null; // Date format settings (Intl.DateTimeFormat)
     this.latestPage = configData.latestPage || null; // Filename for latest page redirect HTML
+    this.baseUrl = configData.baseUrl || null; // Base URL for sitemap entries
+    this.sitemap = configData.sitemap || null; // Sitemap XML filename within outputDir
 
     this.validate();
   }
@@ -112,6 +114,35 @@ export class Configuration {
       }
     }
 
+    // Validate baseUrl if specified
+    if (this.baseUrl !== null) {
+      if (typeof this.baseUrl !== 'string') {
+        throw new Error('baseUrl must be a string');
+      }
+
+      if (this.baseUrl.trim().length === 0) {
+        throw new Error('baseUrl cannot be empty');
+      }
+    }
+
+    // Validate sitemap if specified
+    if (this.sitemap !== null) {
+      if (typeof this.sitemap !== 'string') {
+        throw new Error('sitemap must be a string');
+      }
+
+      if (this.sitemap.trim().length === 0) {
+        throw new Error('sitemap cannot be empty');
+      }
+
+      // Prevent path traversal: resolved path must stay within outputDir
+      const resolvedSitemap = resolve(this.outputDir, this.sitemap);
+      const rel = relative(this.outputDir, resolvedSitemap);
+      if (rel.startsWith('..')) {
+        throw new Error('sitemap must not reference a path outside the output directory');
+      }
+    }
+
     // Validate dateFormat if specified
     if (this.dateFormat !== null) {
       if (typeof this.dateFormat !== 'object') {
@@ -156,7 +187,9 @@ export class Configuration {
       timeout: this.timeout,
       outputDir: this.outputDir,
       dateFormat: this.dateFormat,
-      latestPage: this.latestPage
+      latestPage: this.latestPage,
+      baseUrl: this.baseUrl,
+      sitemap: this.sitemap
     };
   }
 
