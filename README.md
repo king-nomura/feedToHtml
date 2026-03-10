@@ -1,17 +1,19 @@
 # feedToHtml
 
-RSSフィードをHTMLに変換するコマンドラインツールです。RSS 2.0およびAtomフィードに対応し、カスタマイズ可能なHTMLテンプレートとページネーション機能を提供します。
+[日本語版 README はこちら](README.ja.md)
 
-## 特徴
+A command-line tool that converts RSS feeds into HTML. Supports RSS 2.0 and Atom feeds with customizable HTML templates and monthly pagination.
 
-- **軽量**: 最小限の依存関係でNode.js 20+で動作
-- **フレキシブル**: カスタムHTMLテンプレートに対応
-- **月別グループ化**: 記事を公開月ごとに自動整理
-- **インクリメンタル更新**: 既存ファイルには新しい記事のみ追加
-- **自動化対応**: cronジョブでの定期実行に最適
-- **クロスプラットフォーム**: Linux、macOS、Windows対応
+## Features
 
-## インストール
+- **Lightweight**: Minimal dependencies, runs on Node.js 20+
+- **Flexible**: Custom HTML template support
+- **Monthly Grouping**: Automatically organizes articles by publication month
+- **Incremental Updates**: Only adds new articles to existing files
+- **Automation-Ready**: Ideal for scheduled execution via cron jobs
+- **Cross-Platform**: Works on Linux, macOS, and Windows
+
+## Installation
 
 ```bash
 git clone https://github.com/king-nomura/feedToHtml.git
@@ -19,50 +21,50 @@ cd feedToHtml
 npm install
 ```
 
-## 使用方法
+## Usage
 
-### 基本的な使用方法
+### Basic Usage
 
 ```bash
 node src/cli/main.js <RSS_URL>
 ```
 
-例：
+Example:
 ```bash
 node src/cli/main.js https://example.com/rss.xml
 ```
 
-### 出力ディレクトリを指定
+### Specify Output Directory
 
 ```bash
-node src/cli/main.js <RSS_URL> --output <出力ディレクトリ>
+node src/cli/main.js <RSS_URL> --output <OUTPUT_DIR>
 ```
 
-例：
+Example:
 ```bash
 node src/cli/main.js https://example.com/rss.xml --output ./public
 ```
 
-### ローカルファイルから変換
+### Convert from Local File
 
 ```bash
-node src/cli/main.js --file <ローカルファイル> --output <出力ディレクトリ>
+node src/cli/main.js --file <LOCAL_FILE> --output <OUTPUT_DIR>
 ```
 
-### 設定ファイルを使用した高度な設定
+### Advanced Configuration with Config File
 
 ```bash
-node src/cli/main.js <RSS_URL> --config <設定ファイル>
+node src/cli/main.js <RSS_URL> --config <CONFIG_FILE>
 ```
 
-例：
+Example:
 ```bash
 node src/cli/main.js https://example.com/rss.xml --config config.json
 ```
 
-### 出力形式
+### Output Structure
 
-記事は公開日に基づいて月別にグループ化され、以下の構造で出力されます：
+Articles are grouped by publication month and output in the following structure:
 
 ```
 <output_dir>/
@@ -75,11 +77,11 @@ node src/cli/main.js https://example.com/rss.xml --config config.json
     └── 2024-12.html
 ```
 
-既存のHTMLファイルがある場合は、新しい記事のみが追加されます（インクリメンタル更新）。
+If existing HTML files are present, only new articles are appended (incremental update).
 
-### 最新ページリダイレクト
+### Latest Page Redirect
 
-設定ファイルで `latestPage` を指定すると、最新の記事が含まれる月別ページへ自動リダイレクトするHTMLファイルが出力ディレクトリに生成されます。
+By setting `latestPage` in the config file, a redirect HTML file is generated in the output directory that automatically redirects to the monthly page containing the most recent articles.
 
 ```json
 {
@@ -87,13 +89,13 @@ node src/cli/main.js https://example.com/rss.xml --config config.json
 }
 ```
 
-上記の場合、`<output_dir>/latest.html` が生成され、アクセスすると最新月のページ（例: `2025/2025-03.html`）へリダイレクトされます。
+With the above configuration, `<output_dir>/latest.html` is generated and redirects visitors to the latest monthly page (e.g., `2025/2025-03.html`).
 
-> **注意**: セキュリティ上の理由から、`../` 等を使って出力ディレクトリより上の階層を指すパスは拒否されます。
+> **Note**: For security reasons, paths that traverse above the output directory (e.g., using `../`) are rejected.
 
-## 設定ファイル
+## Configuration File
 
-JSON形式の設定ファイルで以下のオプションを設定できます：
+The following options can be set via a JSON configuration file:
 
 ```json
 {
@@ -112,38 +114,38 @@ JSON形式の設定ファイルで以下のオプションを設定できます�
 }
 ```
 
-### 設定項目
+### Configuration Options
 
-- `templatePath` (オプション): カスタムHTMLテンプレートのパス
-- `timeout` (オプション): ネットワークタイムアウト秒数（デフォルト: 60秒）
-- `outputDir` (オプション): 出力ディレクトリのパス
-- `dateFormat` (オプション): 日付フォーマット設定（Intl.DateTimeFormat準拠）
-- `latestPage` (オプション): 最新記事ページへのリダイレクトHTMLのファイル名（例: `"latest.html"`）
+- `templatePath` (optional): Path to a custom HTML template
+- `timeout` (optional): Network timeout in seconds (default: 60)
+- `outputDir` (optional): Output directory path
+- `dateFormat` (optional): Date format settings (follows Intl.DateTimeFormat)
+- `latestPage` (optional): Filename for the redirect HTML to the latest article page (e.g., `"latest.html"`)
 
-## HTMLテンプレート
+## HTML Templates
 
-デフォルトテンプレートをカスタマイズして独自のHTMLレイアウトを作成できます。テンプレートでは以下のプレースホルダーが使用できます：
+You can customize the default template to create your own HTML layout. The following placeholders are available:
 
-### フィード情報
-- `{{FEED_TITLE}}`: フィードのタイトル
-- `{{FEED_DESCRIPTION}}`: フィードの説明
-- `{{FEED_LINK}}`: フィードのリンク
-- `{{YEAR_MONTH}}`: 年月（例: 2025年1月）
+### Feed Information
+- `{{FEED_TITLE}}`: Feed title
+- `{{FEED_DESCRIPTION}}`: Feed description
+- `{{FEED_LINK}}`: Feed link
+- `{{YEAR_MONTH}}`: Year and month (e.g., January 2025)
 
-### 記事情報（ITEMSブロック内）
-- `{{#ITEMS}}...{{/ITEMS}}`: 記事ループブロック
-- `{{ITEM_TITLE}}`: 記事タイトル
-- `{{ITEM_LINK}}`: 記事リンク
-- `{{ITEM_DESCRIPTION}}`: 記事内容
-- `{{ITEM_DATE}}`: 公開日
-- `{{ITEM_AUTHOR}}`: 著者
-- `{{ITEM_CATEGORIES}}`: カテゴリ
+### Article Information (within ITEMS block)
+- `{{#ITEMS}}...{{/ITEMS}}`: Article loop block
+- `{{ITEM_TITLE}}`: Article title
+- `{{ITEM_LINK}}`: Article link
+- `{{ITEM_DESCRIPTION}}`: Article content
+- `{{ITEM_DATE}}`: Publication date
+- `{{ITEM_AUTHOR}}`: Author
+- `{{ITEM_CATEGORIES}}`: Categories
 
-### ナビゲーション
-- `{{MONTHLY_NAV}}`: 月別ナビゲーション
-- `{{GENERATION_DATE}}`: 生成日時
+### Navigation
+- `{{MONTHLY_NAV}}`: Monthly navigation
+- `{{GENERATION_DATE}}`: Generation timestamp
 
-### テンプレート例
+### Template Example
 
 ```html
 <!DOCTYPE html>
@@ -155,7 +157,7 @@ JSON形式の設定ファイルで以下のオプションを設定できます�
 <body>
     <h1>{{FEED_TITLE}}</h1>
     <p>{{FEED_DESCRIPTION}}</p>
-    
+
     {{#ITEMS}}
     <article>
         <h2><a href="{{ITEM_LINK}}">{{ITEM_TITLE}}</a></h2>
@@ -163,7 +165,7 @@ JSON形式の設定ファイルで以下のオプションを設定できます�
         <div>{{ITEM_DESCRIPTION}}</div>
     </article>
     {{/ITEMS}}
-    
+
     <footer>
         Generated on {{GENERATION_DATE}}
     </footer>
@@ -171,60 +173,60 @@ JSON形式の設定ファイルで以下のオプションを設定できます�
 </html>
 ```
 
-## cronでの自動実行
+## Automated Execution with cron
 
-定期的にRSSフィードを更新する場合のcrontab設定例：
+Example crontab entry for periodic RSS feed updates:
 
 ```bash
-# 毎時0分にRSSフィードを更新
+# Update RSS feed every hour
 0 * * * * cd /path/to/feedToHtml && node src/cli/main.js https://example.com/rss.xml --output /var/www/html/feeds
 ```
 
-## エラーコード
+## Exit Codes
 
-プログラムは以下の終了コードを返します：
+The program returns the following exit codes:
 
-- `0`: 正常終了
-- `1`: ネットワークエラー
-- `2`: 解析エラー
-- `3`: ファイルシステムエラー
-- `4`: 設定エラー
+- `0`: Success
+- `1`: Network error
+- `2`: Parse error
+- `3`: Filesystem error
+- `4`: Configuration error
 
-## 対応フォーマット
+## Supported Formats
 
 - RSS 2.0
 - Atom 1.0
 
-## システム要件
+## Requirements
 
-- Node.js 20.0.0以上
+- Node.js 20.0.0 or later
 
-## 実験的機能: outboxtohtml
+## Experimental: outboxtohtml
 
-ActivityPub Outbox（Mastodonなど）をHTMLに変換する実験的な機能も含まれています。
+An experimental feature for converting ActivityPub Outbox (e.g., Mastodon) to HTML is also included.
 
 ```bash
-node src/cli/outbox_main.js <OUTBOX_URL> --output <出力ディレクトリ>
-# または
-node src/cli/outbox_main.js --file <ローカルファイル> --output <出力ディレクトリ>
+node src/cli/outbox_main.js <OUTBOX_URL> --output <OUTPUT_DIR>
+# or
+node src/cli/outbox_main.js --file <LOCAL_FILE> --output <OUTPUT_DIR>
 ```
 
-> **注意**: この機能は実験的であり、APIが変更される可能性があります。
+> **Note**: This feature is experimental and the API may change.
 
-## 開発について
+## Development
 
-このプロジェクトは [Claude Code](https://claude.ai/code)（Anthropic社のAIコーディングアシスタント）を活用して開発されました。
+This project was developed with the help of [Claude Code](https://claude.ai/code), Anthropic's AI coding assistant.
 
-### テスト実行
+### Running Tests
 
 ```bash
 npm test
 ```
 
-## ライセンス
+## License
 
 MIT License
 
-## 貢献
+## Contributing
 
-バグレポートや機能リクエストは [Issues](https://github.com/king-nomura/feedToHtml/issues) までお願いします。
+Bug reports and feature requests are welcome via [Issues](https://github.com/king-nomura/feedToHtml/issues).
