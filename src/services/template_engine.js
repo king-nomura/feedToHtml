@@ -1,4 +1,5 @@
 import { HTMLTemplate } from '../models/html_template.js';
+import { sanitizeUrl } from '../utils/url_sanitizer.js';
 
 /**
  * Template Engine Service for HTML template processing and placeholder substitution
@@ -83,7 +84,10 @@ export class TemplateEngine {
           let result = processedContent;
           Object.entries(vals).forEach(([key, value]) => {
             const placeholder = `{{${key}}}`;
-            result = result.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), value);
+            // Use a replacer function so `$`-sequences in the value (e.g. $&, $$,
+            // $1) are inserted literally rather than interpreted as replacement
+            // specials.
+            result = result.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), () => value);
           });
           return result;
         }
@@ -103,10 +107,10 @@ export class TemplateEngine {
    */
   prepareFeedValues(feed) {
     return {
-      FEED_TITLE: feed.title || '',
-      FEED_DESCRIPTION: feed.description || '',
-      FEED_LINK: feed.link || '',
-      FEED_LANGUAGE: feed.language || 'en',
+      FEED_TITLE: this.escapeHTML(feed.title || ''),
+      FEED_DESCRIPTION: this.escapeHTML(feed.description || ''),
+      FEED_LINK: this.escapeHTML(sanitizeUrl(feed.link || '')),
+      FEED_LANGUAGE: this.escapeHTML(feed.language || 'en'),
       TOTAL_ITEMS: feed.getItemCount().toString()
     };
   }
@@ -160,8 +164,8 @@ export class TemplateEngine {
   generateItemHTML(item) {
     const itemValues = {
       ITEM_TITLE: this.escapeHTML(item.title || 'Untitled'),
-      ITEM_LINK: item.link || '#',
-      ITEM_DESCRIPTION: this.processItemDescription(item.description || ''),
+      ITEM_LINK: this.escapeHTML(sanitizeUrl(item.link || '#')),
+      ITEM_DESCRIPTION: this.escapeHTML(item.description || ''),
       ITEM_DATE: this.formatItemDate(item),
       ITEM_AUTHOR: item.hasAuthor() ? this.escapeHTML(item.author) : '',
       ITEM_CATEGORIES: item.hasCategories() ? this.escapeHTML(item.getCategoriesString()) : ''
@@ -187,31 +191,12 @@ export class TemplateEngine {
     // Substitute remaining placeholders
     Object.entries(itemValues).forEach(([key, value]) => {
       const placeholder = `{{${key}}}`;
-      html = html.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), value);
+      // Replacer function: insert the value literally so `$`-sequences are not
+      // treated as replacement specials.
+      html = html.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), () => value);
     });
 
     return html;
-  }
-
-  /**
-   * Process item description (clean HTML, truncate if needed)
-   * @param {string} description - Raw description
-   * @returns {string} Processed description
-   */
-  processItemDescription(description) {
-    if (!description) return '';
-
-    // Remove or escape potentially dangerous HTML
-    let processed = description
-      .replace(/<script[^>]*>.*?<\/script>/gis, '') // Remove script tags
-      .replace(/<iframe[^>]*>.*?<\/iframe>/gis, '') // Remove iframe tags
-      .replace(/on\w+="[^"]*"/gi, ''); // Remove event handlers
-
-    // Convert relative URLs to absolute (basic implementation)
-    // This is a simplified version - a full implementation would need the base URL
-    processed = processed.replace(/src="\/([^"]+)"/g, 'src="/$1"');
-
-    return processed;
   }
 
   /**
