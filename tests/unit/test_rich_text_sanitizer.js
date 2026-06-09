@@ -103,4 +103,20 @@ describe('sanitizeRichText', () => {
     assert.ok(out.startsWith('<a href="https://e.com"'), 'a tag restored');
     assert.ok(out.endsWith('</a>'), 'closing a tag restored');
   });
+
+  test('keeps URL query-string ampersands correctly escaped', () => {
+    assert.equal(
+      sanitizeRichText('<a href="https://e.com/?a=1&b=2">x</a>'),
+      '<a href="https://e.com/?a=1&amp;b=2" rel="nofollow noopener" target="_blank">x</a>'
+    );
+  });
+
+  // --- 既知の制約: 属性値内の '>' は表示崩れになるが、決して live markup にはならない ---
+  test("'>' inside an attribute never yields live markup (documented limitation)", () => {
+    const out = sanitizeRichText('<a title="a>b" href="https://e.com">link</a>');
+    // Cosmetic corruption is acceptable; the security invariant is what we pin:
+    // no executable tag escapes, and any leaked remainder stays HTML-escaped.
+    assert.ok(!/<(?!\/?(?:a|br)\b)/.test(out), 'only <a>/<br> may appear as live tags');
+    assert.ok(!out.includes('onerror') && !out.includes('javascript:'), 'no dangerous content');
+  });
 });

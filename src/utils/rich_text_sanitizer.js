@@ -4,6 +4,14 @@
  * Allows only <br> and <a href> (with auto-added rel/target). All other tags
  * are stripped (their text content is kept). Everything is HTML-escaped first,
  * so any restore/strip gap fails safe to inert text rather than live markup.
+ *
+ * Known limitation: a literal '>' inside an attribute value (e.g.
+ * <a title="a>b" href="...">) ends the tag match early, so the link may lose
+ * its href and the attribute remainder leaks as visible (escaped) text. This is
+ * a rare cosmetic/content issue, never a security one — the leaked remainder
+ * stays HTML-escaped and inert. We deliberately keep the tag-matching regexes
+ * simple and linear: an attribute-aware regex would risk catastrophic
+ * backtracking (ReDoS) on untrusted feed input, a worse trade than this edge.
  */
 
 import { sanitizeUrl } from './url_sanitizer.js';
