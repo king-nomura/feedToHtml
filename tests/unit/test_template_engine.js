@@ -108,3 +108,35 @@ describe('TemplateEngine XSS escaping', () => {
       '$$ must be preserved literally in the template substitution path');
   });
 });
+
+describe('TemplateEngine description rich text', () => {
+  test('ITEM_DESCRIPTION allows <br> and <a>', () => {
+    const engine = new TemplateEngine();
+    const html = engine.generateItemHTML(
+      makeItem({ description: 'line1<br>line2 <a href="https://e.com">link</a>' })
+    );
+    assert.ok(html.includes('line1<br>line2'), '<br> must be preserved');
+    assert.ok(
+      html.includes('<a href="https://e.com" rel="nofollow noopener" target="_blank">link</a>'),
+      '<a> must be preserved with rel/target'
+    );
+  });
+
+  test('ITEM_DESCRIPTION strips disallowed tags but keeps content', () => {
+    const engine = new TemplateEngine();
+    const html = engine.generateItemHTML(
+      makeItem({ description: '<script>alert(1)</script><p>hello</p>' })
+    );
+    assert.ok(!html.includes('<script>'), 'script tag must be stripped');
+    assert.ok(html.includes('alert(1)hello'), 'inner text must remain');
+  });
+
+  test('ITEM_TITLE still fully escapes tags (not rich text)', () => {
+    const engine = new TemplateEngine();
+    const html = engine.generateItemHTML(
+      makeItem({ title: 'hi<br>there' })
+    );
+    assert.ok(html.includes('hi&lt;br&gt;there'), 'title <br> must stay escaped');
+    assert.ok(!html.includes('hi<br>there'), 'title must not get live <br>');
+  });
+});
