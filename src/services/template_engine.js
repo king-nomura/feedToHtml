@@ -1,5 +1,7 @@
 import { HTMLTemplate } from '../models/html_template.js';
 import { sanitizeUrl } from '../utils/url_sanitizer.js';
+import { sanitizeRichText } from '../utils/rich_text_sanitizer.js';
+import { escapeHTML } from '../utils/html_escape.js';
 
 /**
  * Template Engine Service for HTML template processing and placeholder substitution
@@ -108,7 +110,7 @@ export class TemplateEngine {
   prepareFeedValues(feed) {
     return {
       FEED_TITLE: this.escapeHTML(feed.title || ''),
-      FEED_DESCRIPTION: this.escapeHTML(feed.description || ''),
+      FEED_DESCRIPTION: sanitizeRichText(feed.description || ''),
       FEED_LINK: this.escapeHTML(sanitizeUrl(feed.link || '')),
       FEED_LANGUAGE: this.escapeHTML(feed.language || 'en'),
       TOTAL_ITEMS: feed.getItemCount().toString()
@@ -165,7 +167,7 @@ export class TemplateEngine {
     const itemValues = {
       ITEM_TITLE: this.escapeHTML(item.title || 'Untitled'),
       ITEM_LINK: this.escapeHTML(sanitizeUrl(item.link || '#')),
-      ITEM_DESCRIPTION: this.escapeHTML(item.description || ''),
+      ITEM_DESCRIPTION: sanitizeRichText(item.description || ''),
       ITEM_DATE: this.formatItemDate(item),
       ITEM_AUTHOR: item.hasAuthor() ? this.escapeHTML(item.author) : '',
       ITEM_CATEGORIES: item.hasCategories() ? this.escapeHTML(item.getCategoriesString()) : ''
@@ -224,19 +226,14 @@ export class TemplateEngine {
   }
 
   /**
-   * Escape HTML special characters
+   * Escape HTML special characters.
+   * Delegates to the shared escapeHTML primitive so escaping rules stay in
+   * one place (see src/utils/html_escape.js).
    * @param {string} text - Text to escape
    * @returns {string} Escaped text
    */
   escapeHTML(text) {
-    if (!text) return '';
-
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return escapeHTML(text);
   }
 
   /**
