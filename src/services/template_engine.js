@@ -84,7 +84,10 @@ export class TemplateEngine {
           let result = processedContent;
           Object.entries(vals).forEach(([key, value]) => {
             const placeholder = `{{${key}}}`;
-            result = result.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), value);
+            // Use a replacer function so `$`-sequences in the value (e.g. $&, $$,
+            // $1) are inserted literally rather than interpreted as replacement
+            // specials.
+            result = result.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), () => value);
           });
           return result;
         }
@@ -188,7 +191,9 @@ export class TemplateEngine {
     // Substitute remaining placeholders
     Object.entries(itemValues).forEach(([key, value]) => {
       const placeholder = `{{${key}}}`;
-      html = html.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), value);
+      // Replacer function: insert the value literally so `$`-sequences are not
+      // treated as replacement specials.
+      html = html.replace(new RegExp(this.escapeRegExp(placeholder), 'g'), () => value);
     });
 
     return html;
