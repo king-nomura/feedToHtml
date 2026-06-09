@@ -139,4 +139,15 @@ describe('TemplateEngine description rich text', () => {
     assert.ok(html.includes('hi&lt;br&gt;there'), 'title <br> must stay escaped');
     assert.ok(!html.includes('hi<br>there'), 'title must not get live <br>');
   });
+
+  test('FEED_DESCRIPTION allows <br>/<a> and strips disallowed tags', () => {
+    const engine = new TemplateEngine();
+    const values = engine.prepareFeedValues(
+      makeFeed({ description: 'a<br><a href="https://e.com">x</a><p>y</p>' })
+    );
+    assert.equal(
+      values.FEED_DESCRIPTION,
+      'a<br><a href="https://e.com" rel="nofollow noopener" target="_blank">x</a>y'
+    );
+  });
 });
