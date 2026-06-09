@@ -3,6 +3,8 @@
   "timeout": 60,
   "outputDir": "./output",
   "latestPage": "latest.html",
+  "baseUrl": "https://example.com",
+  "sitemap": "sitemap.xml",
   "dateFormat": {
     "locale": "ja-JP",
     "options": {
