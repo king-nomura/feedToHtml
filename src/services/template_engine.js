@@ -1,5 +1,6 @@
 import { HTMLTemplate } from '../models/html_template.js';
 import { sanitizeUrl } from '../utils/url_sanitizer.js';
+import { sanitizeRichText } from '../utils/rich_text_sanitizer.js';
 
 /**
  * Template Engine Service for HTML template processing and placeholder substitution
@@ -108,7 +109,7 @@ export class TemplateEngine {
   prepareFeedValues(feed) {
     return {
       FEED_TITLE: this.escapeHTML(feed.title || ''),
-      FEED_DESCRIPTION: this.escapeHTML(feed.description || ''),
+      FEED_DESCRIPTION: sanitizeRichText(feed.description || ''),
       FEED_LINK: this.escapeHTML(sanitizeUrl(feed.link || '')),
       FEED_LANGUAGE: this.escapeHTML(feed.language || 'en'),
       TOTAL_ITEMS: feed.getItemCount().toString()
@@ -165,7 +166,7 @@ export class TemplateEngine {
     const itemValues = {
       ITEM_TITLE: this.escapeHTML(item.title || 'Untitled'),
       ITEM_LINK: this.escapeHTML(sanitizeUrl(item.link || '#')),
-      ITEM_DESCRIPTION: this.escapeHTML(item.description || ''),
+      ITEM_DESCRIPTION: sanitizeRichText(item.description || ''),
       ITEM_DATE: this.formatItemDate(item),
       ITEM_AUTHOR: item.hasAuthor() ? this.escapeHTML(item.author) : '',
       ITEM_CATEGORIES: item.hasCategories() ? this.escapeHTML(item.getCategoriesString()) : ''

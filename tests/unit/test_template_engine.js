@@ -50,15 +50,15 @@ describe('TemplateEngine XSS escaping', () => {
       'javascript: scheme must not survive');
   });
 
-  test('ITEM_DESCRIPTION HTML is fully escaped (Vuln 2)', () => {
+  test('ITEM_DESCRIPTION disallowed tags do not survive (Vuln 2)', () => {
     const engine = new TemplateEngine();
     const html = engine.generateItemHTML(
       makeItem({ description: '<img src=x onerror=alert(1)>' })
     );
-    assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'),
-      'description HTML must be escaped');
     assert.ok(!html.includes('<img src=x onerror=alert(1)>'),
       'raw <img> tag must not appear');
+    assert.ok(!html.includes('onerror=alert(1)'),
+      'event handler attribute must not appear');
   });
 
   test('FEED_TITLE is escaped (Vuln 3)', () => {
