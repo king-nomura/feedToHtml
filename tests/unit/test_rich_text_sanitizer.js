@@ -111,6 +111,17 @@ describe('sanitizeRichText', () => {
     );
   });
 
+  // --- 性能: 未終端タグ大量入力で二次爆発(ReDoS)しないこと ---
+  test('pathological unterminated-tag input stays linear (no ReDoS)', () => {
+    // Many "<a" starts with no closing ">" — the O(n^2) failure mode.
+    const evil = '<a href="'.repeat(50000);
+    const start = Date.now();
+    const out = sanitizeRichText(evil);
+    const elapsed = Date.now() - start;
+    assert.ok(elapsed < 2000, `should finish quickly, took ${elapsed}ms`);
+    assert.ok(!out.includes('<a'), 'unterminated tags must not become live markup');
+  });
+
   // --- 既知の制約: 属性値内の '>' は表示崩れになるが、決して live markup にはならない ---
   test("'>' inside an attribute never yields live markup (documented limitation)", () => {
     const out = sanitizeRichText('<a title="a>b" href="https://e.com">link</a>');
